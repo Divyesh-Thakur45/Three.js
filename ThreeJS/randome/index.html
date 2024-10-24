@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3D Laptop with Three.js</title>
+    <style>
+      body {
+        margin: 0;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+      // Set up scene, camera, and renderer
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+      );
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      // Add lighting
+      const ambientLight = new THREE.AmbientLight(0x404040); // soft white light
+      scene.add(ambientLight);
+
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+      directionalLight.position.set(1, 1, 1).normalize();
+      scene.add(directionalLight);
+
+      // Create the laptop base
+      const baseGeometry = new THREE.BoxGeometry(5, 0.2, 3);
+      const baseMaterial = new THREE.MeshPhongMaterial({ color: 0x555555 });
+      const laptopBase = new THREE.Mesh(baseGeometry, baseMaterial);
+      laptopBase.position.set(0, -0.2, 0);
+      scene.add(laptopBase);
+
+      // Create the laptop screen
+      const screenGeometry = new THREE.PlaneGeometry(4.8, 2.8);
+      const screenMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+      const laptopScreen = new THREE.Mesh(screenGeometry, screenMaterial);
+      laptopScreen.position.set(0, 1.5, -1.5);
+      laptopScreen.rotation.x = -Math.PI / 3;
+      scene.add(laptopScreen);
+
+      // Add text to the screen
+      const loader = new THREE.FontLoader();
+      loader.load(
+        "https://threejs.org/examples/fonts/helvetiker_regular.typeface.json",
+        function (font) {
+          const textGeometry = new THREE.TextGeometry("CODER", {
+            font: font,
+            size: 0.4,
+            height: 0.05,
+            curveSegments: 12,
+          });
+          const textMaterial = new THREE.MeshBasicMaterial({ color: 0xff007f });
+          const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+          textMesh.position.set(-1.5, 1.2, -1.7);
+          textMesh.rotation.x = -Math.PI / 3;
+          scene.add(textMesh);
+        }
+      );
+
+      // Set the camera position
+      camera.position.z = 6;
+
+      // Create render loop
+      function animate() {
+        requestAnimationFrame(animate);
+
+        laptopBase.rotation.y += 0.01;
+        laptopScreen.rotation.y += 0.01;
+
+        renderer.render(scene, camera);
+      }
+      animate();
+    </script>
+  </body>
+</html>
